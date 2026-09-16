@@ -11,7 +11,8 @@ case "$DAY" in
   day4am) LABS="lab02-install lab04-node lab05a-deployment lab05b-workloads" ;;
   day4) LABS="lab02-install lab04-node lab05a-deployment lab05b-workloads lab06-service" ;;
   day5am) LABS="lab02-install lab04-node lab05a-deployment lab05b-workloads lab06-service lab07-probe" ;;
-  *) echo "사용법: bash verify-all.sh day1|day2|day3am|day3|day4am|day4|day5am"; exit 1 ;;
+  day5) LABS="lab02-install lab04-node lab05a-deployment lab05b-workloads lab06-service lab07-probe lab08-resources" ;;
+  *) echo "사용법: bash verify-all.sh day1|day2|day3am|day3|day4am|day4|day5am|day5"; exit 1 ;;
 esac
 rc=0
 for L in $LABS; do bash "$REPO/$L/verify.sh" || rc=1; echo; done
