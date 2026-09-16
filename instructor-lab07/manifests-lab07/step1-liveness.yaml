@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shop-api
+  namespace: shop
+  annotations:
+    kubernetes.io/change-cause: "livenessProbe 추가"
+spec:
+  replicas: 2
+  progressDeadlineSeconds: 120
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: shop
+      tier: api
+  template:
+    metadata:
+      labels:
+        app: shop
+        tier: api
+        version: v2
+    spec:
+      nodeSelector:
+        tier: front
+      containers:
+        - name: api
+          image: ghcr.io/worldvit/skillboost-api:v2
+          ports:
+            - name: http
+              containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: shop-config
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: shop-db-secret
+                  key: DB_PASSWORD
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 3
