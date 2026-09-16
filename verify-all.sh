@@ -8,7 +8,8 @@ case "$DAY" in
   day2) LABS="lab02-install lab03-pod" ;;
   day3am) LABS="lab02-install lab04-node" ;;
   day3) LABS="lab02-install lab04-node lab05a-deployment" ;;
-  *) echo "사용법: bash verify-all.sh day1|day2|day3am|day3"; exit 1 ;;
+  day4am) LABS="lab02-install lab04-node lab05a-deployment lab05b-workloads" ;;
+  *) echo "사용법: bash verify-all.sh day1|day2|day3am|day3|day4am"; exit 1 ;;
 esac
 rc=0
 for L in $LABS; do bash "$REPO/$L/verify.sh" || rc=1; echo; done
