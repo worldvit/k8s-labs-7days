@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: shop-log-agent
+  namespace: shop
+spec:
+  selector:
+    matchLabels:
+      app: shop
+      tier: log-agent
+  template:
+    metadata:
+      labels:
+        app: shop
+        tier: log-agent
+    spec:
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "db"
+          effect: "NoSchedule"
+      containers:
+        - name: agent
+          image: busybox:1.37
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          command: ["sh", "-c", "while true; do echo \"$(date +%T) node=$NODE_NAME pod-log-dirs=$(ls /host/var/log/pods | wc -l)\"; sleep 30; done"]
+          volumeMounts:
+            - name: pod-logs
+              mountPath: /host/var/log/pods
+              readOnly: true
+      volumes:
+        - name: pod-logs
+          hostPath:
+            path: /var/log/pods
+            type: Directory
