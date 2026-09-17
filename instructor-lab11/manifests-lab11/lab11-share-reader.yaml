@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lab11-share-reader
+  namespace: shop
+spec:
+  restartPolicy: Never
+  nodeSelector:
+    kubernetes.io/hostname: cap-node2
+  tolerations:
+    - key: "dedicated"
+      operator: "Equal"
+      value: "db"
+      effect: "NoSchedule"
+  containers:
+    - name: reader
+      image: busybox:1.37
+      env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+      command: ["sh", "-c", "echo \"reader on $NODE_NAME\"; tail -n 2 /report/products.log; touch /report/reader-was-here && echo write-ok"]
+      volumeMounts:
+        - name: report
+          mountPath: /report
+  volumes:
+    - name: report
+      persistentVolumeClaim:
+        claimName: shop-share

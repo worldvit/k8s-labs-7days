@@ -1,0 +1,3 @@
+# SkillBoost shop NFS (Lab11) — 워커 노드만 허용, root_squash 기본값 유지
+/srv/nfs/shop-db     10.20.1.11(rw,sync,no_subtree_check) 10.20.1.12(rw,sync,no_subtree_check)
+/srv/nfs/shop-share  10.20.1.11(rw,sync,no_subtree_check) 10.20.1.12(rw,sync,no_subtree_check)

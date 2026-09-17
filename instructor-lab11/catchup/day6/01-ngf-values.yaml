@@ -1,0 +1,10 @@
+nginxGateway:
+  productTelemetry:
+    enable: false
+nginx:
+  service:
+    type: NodePort
+    externalTrafficPolicy: Cluster
+    nodePorts:
+      - port: 31080
+        listenerPort: 80

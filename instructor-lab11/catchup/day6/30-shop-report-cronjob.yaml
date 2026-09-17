@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: shop-report
+  namespace: shop
+spec:
+  schedule: "*/2 * * * *"
+  timeZone: "Asia/Seoul"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            app: shop
+            tier: report
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: report
+              image: mysql:8.4
+              env:
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: shop-db-secret
+                      key: DB_PASSWORD
+              command:
+                - sh
+                - -c
+                - |
+                  set -e
+                  printf '[client]\npassword="%s"\n' "$DB_PASSWORD" > /tmp/my.cnf
+                  LINE="$(date +%F_%T) products=$(mysql --defaults-extra-file=/tmp/my.cnf -N -h shop-db-0.shop-db -u shop shop -e 'SELECT COUNT(*) FROM products')"
+                  echo "$LINE"
+                  echo "$LINE" >> /report/products.log
+              volumeMounts:
+                - name: report
+                  mountPath: /report
+          volumes:
+            - name: report
+              persistentVolumeClaim:
+                claimName: shop-share
