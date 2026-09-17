@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lab12-ebs-test
+  namespace: shop
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gp3
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lab12-ebs-test
+  namespace: shop
+spec:
+  nodeSelector:
+    tier: front
+  containers:
+    - name: writer
+      image: busybox:1.37
+      command:
+        - sh
+        - -c
+        - |
+          echo "ebs-ok on $(hostname)" > /data/hello.txt
+          cat /data/hello.txt
+          grep " /data " /proc/mounts
+          sleep 3600
+      volumeMounts:
+        - name: data
+          mountPath: /data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: lab12-ebs-test

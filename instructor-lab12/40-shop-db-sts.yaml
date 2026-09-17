@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: shop-db
+  namespace: shop
+spec:
+  serviceName: shop-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shop
+      tier: db
+  template:
+    metadata:
+      labels:
+        app: shop
+        tier: db
+    spec:
+      nodeSelector:
+        disk: ssd
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "db"
+          effect: "NoSchedule"
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        runAsNonRoot: true
+        fsGroup: 999
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+        - name: mysql
+          image: mysql:8.4
+          ports:
+            - name: mysql
+              containerPort: 3306
+          resources:
+            requests: {cpu: 250m, memory: 512Mi}
+            limits: {cpu: 500m, memory: 1Gi}
+          env:
+            - name: MYSQL_RANDOM_ROOT_PASSWORD
+              value: "yes"
+            - name: MYSQL_DATABASE
+              value: "shop"
+            - name: MYSQL_USER
+              value: "shop"
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: shop-db-secret
+                  key: DB_PASSWORD
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: shop-db-ebs
