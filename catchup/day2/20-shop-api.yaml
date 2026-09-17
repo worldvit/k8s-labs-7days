@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: shop-api
+  namespace: shop
+  labels:
+    app: shop
+    tier: api
+    version: v1
+  annotations:
+    owner: "shop-team@skillboost.example"
+spec:
+  containers:
+    - name: api
+      image: ghcr.io/worldvit/skillboost-api:v1
+      ports:
+        - containerPort: 5000
+      envFrom:
+        - configMapRef:
+            name: shop-config
+      env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: shop-db-secret
+              key: DB_PASSWORD

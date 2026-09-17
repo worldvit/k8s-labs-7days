@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shop-config
+  namespace: shop
+data:
+  APP_TITLE: "SkillBoost Shop"
+  DB_MODE: "memory"
+  DB_HOST: "shop-db"
+  DB_NAME: "shop"
+  DB_USER: "shop"

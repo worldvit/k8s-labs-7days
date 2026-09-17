@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: shop-db
+  namespace: shop
+  labels:
+    app: shop
+    tier: db
+spec:
+  clusterIP: None
+  selector:
+    app: shop
+    tier: db
+  ports:
+    - name: mysql
+      port: 3306

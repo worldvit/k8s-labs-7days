@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: shop-db-seed
+  namespace: shop
+spec:
+  backoffLimit: 6
+  template:
+    metadata:
+      labels:
+        app: shop
+        tier: db-seed
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: seed
+          image: mysql:8.4
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: shop-db-secret
+                  key: DB_PASSWORD
+          command: ["sh", "-c", "printf '[client]\\npassword=\"%s\"\\n' \"$DB_PASSWORD\" > /tmp/my.cnf && mysql --defaults-extra-file=/tmp/my.cnf -h shop-db-0.shop-db -u shop shop < /seed/schema-seed.sql && echo seed-done"]
+          volumeMounts:
+            - name: sql
+              mountPath: /seed
+      volumes:
+        - name: sql
+          configMap:
+            name: shop-db-seed-sql
