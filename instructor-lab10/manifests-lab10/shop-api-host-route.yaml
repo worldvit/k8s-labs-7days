@@ -1,0 +1,15 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: lab10-api-host
+  namespace: shop
+spec:
+  parentRefs:
+    - name: shop-gateway
+      sectionName: http
+  hostnames:
+    - "api.skillboost.local"
+  rules:
+    - backendRefs:
+        - name: shop-api
+          port: 5000
