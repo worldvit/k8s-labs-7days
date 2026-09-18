@@ -1,0 +1,36 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: cap-eks
+  region: ap-northeast-2
+  version: "1.36"
+  tags:
+    Project: capstone
+    Owner: cap
+
+iam:
+  withOIDC: true          # IRSA(서비스 계정용 IAM 역할)를 쓰기 위한 OIDC 공급자 생성
+
+addonsConfig:
+  autoApplyPodIdentityAssociations: true   # 애드온 권한을 Pod Identity로 자동 연결
+
+addons:
+  - name: vpc-cni
+  - name: coredns
+  - name: kube-proxy
+  - name: eks-pod-identity-agent
+  - name: aws-ebs-csi-driver
+
+managedNodeGroups:
+  - name: ng-app
+    instanceType: t3.medium
+    desiredCapacity: 2
+    minSize: 2
+    maxSize: 4
+    volumeSize: 20
+    labels:
+      tier: front
+    tags:
+      Project: capstone
+      Owner: cap

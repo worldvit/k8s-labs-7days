@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: shop
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shop-config
+  namespace: shop
+data:
+  APP_TITLE: "SkillBoost Shop on EKS"
+  DB_MODE: "mysql"
+  DB_HOST: "shop-db"
+  DB_NAME: "shop"
+  DB_USER: "shop"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: shop-db-secret
+  namespace: shop
+type: Opaque
+stringData:
+  DB_PASSWORD: "ShopDB#2026"
