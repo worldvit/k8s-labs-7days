@@ -7,7 +7,7 @@ REPO="$(cd "$DIR/../.." && pwd)"
 export KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
 echo "[catchup day4] 3일차 상태 위에 DaemonSet · StatefulSet · Job · CronJob · Service를 4일차 종료 상태로 맞춥니다."
 echo "  shop-db 데이터가 비어 있으면 초기 데이터를 다시 적재합니다. AWS 보안 그룹 30080 규칙은 직접 추가해야 합니다."
-read -r -p "계속하려면 yes 입력: " ans; [ "$ans" = "yes" ] || { echo "취소했습니다."; exit 1; }
+if [ "${CATCHUP_YES:-}" != "1" ]; then read -r -p "계속하려면 yes 입력: " ans; [ "$ans" = "yes" ] || { echo "취소했습니다."; exit 1; }; fi
 
 CATCHUP_YES=1 bash "$REPO/catchup/day3/catchup-day3.sh"
 
