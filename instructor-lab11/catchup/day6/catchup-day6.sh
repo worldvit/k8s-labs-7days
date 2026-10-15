@@ -36,10 +36,11 @@ fi
 kubectl apply -f "$DIR/02-shop-gateway.yaml"
 kubectl wait --for=condition=Programmed gateway/shop-gateway -n shop --timeout=180s
 kubectl apply -f "$DIR/03-shop-route.yaml"
-kubectl delete httproute lab10-api-host lab10-canary-route lab10-header -n shop --ignore-not-found
+kubectl delete httproute lab10-api-host lab10-canary-route lab10-header ext-hello-route -n shop --ignore-not-found
 kubectl delete deploy,svc lab10-canary -n shop --ignore-not-found
 
 # ---------- Lab11: NFS 서버 (cap-master) ----------
+apt-get update -qq -o DPkg::Lock::Timeout=300
 DEBIAN_FRONTEND=noninteractive apt-get install -y -qq -o DPkg::Lock::Timeout=300 nfs-kernel-server >/dev/null
 mkdir -p /srv/nfs/shop-db /srv/nfs/shop-share
 chown 999:999 /srv/nfs/shop-db && chmod 750 /srv/nfs/shop-db
