@@ -6,11 +6,17 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO="$(cd "$DIR/../.." && pwd)"
 export KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
 echo "[catchup day5] 4일차 상태 위에 Probe · 자원 설정 · metrics-server · LimitRange · Quota · HPA를 5일차 종료 상태로 맞춥니다."
-read -r -p "계속하려면 yes 입력: " ans; [ "$ans" = "yes" ] || { echo "취소했습니다."; exit 1; }
+if [ "${CATCHUP_YES:-}" != "1" ]; then read -r -p "계속하려면 yes 입력: " ans; [ "$ans" = "yes" ] || { echo "취소했습니다."; exit 1; }; fi
+
+# Lab09 장애 2 흔적 제거 — patch로 넣은 command는 apply로 지워지지 않으므로 먼저 직접 제거
+# (남아 있으면 아래 day3 · day4 단계의 shop-api 롤아웃이 끝나지 않는다)
+if [ -n "$(kubectl get deploy shop-api -n shop -o jsonpath='{.spec.template.spec.containers[0].command}' 2>/dev/null)" ]; then
+  kubectl patch deploy shop-api -n shop --type json -p '[{"op":"remove","path":"/spec/template/spec/containers/0/command"}]'
+fi
 
 CATCHUP_YES=1 bash "$REPO/catchup/day4/catchup-day4.sh"
 
-# Lab09 장애 흔적 제거 (Service selector · 템플릿은 아래 apply로 복구)
+# Lab09 장애 흔적 제거 (Service selector · 나머지 템플릿 필드는 아래 apply로 복구)
 kubectl apply -f "$REPO/catchup/day4/45-shop-api-svc.yaml"
 
 # Lab08: metrics-server
