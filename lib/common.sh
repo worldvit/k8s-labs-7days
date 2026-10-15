@@ -15,7 +15,7 @@ summary() {
   if [ "$PASS_CNT" -eq "$TOTAL_CNT" ]; then
     printf '  결과: %d/%d  통과\n' "$PASS_CNT" "$TOTAL_CNT"
   else
-    printf '  결과: %d/%d  — FAIL 항목은 실습 문서 태스크 14의 표에서 돌아갈 단계를 확인하세요\n' "$PASS_CNT" "$TOTAL_CNT"
+    printf '  결과: %d/%d  — FAIL 항목은 실습 문서 채점 태스크의 [돌아갈 단계] 표에서 확인하세요\n' "$PASS_CNT" "$TOTAL_CNT"
   fi
   [ "$PASS_CNT" -eq "$TOTAL_CNT" ]
 }
