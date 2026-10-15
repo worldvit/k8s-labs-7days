@@ -21,7 +21,7 @@ spec:
                 secretKeyRef:
                   name: shop-db-secret
                   key: DB_PASSWORD
-          command: ["sh", "-c", "printf '[client]\\npassword=\"%s\"\\n' \"$DB_PASSWORD\" > /tmp/my.cnf && mysql --defaults-extra-file=/tmp/my.cnf -h shop-db-0.shop-db -u shop shop < /seed/schema-seed.sql && echo seed-done"]
+          command: ["sh", "-c", "printf '[client]\\npassword=\"%s\"\\n' \"$DB_PASSWORD\" > /tmp/my.cnf && mysql --defaults-extra-file=/tmp/my.cnf --default-character-set=utf8mb4 -h shop-db-0.shop-db -u shop shop < /seed/schema-seed.sql && echo seed-done"]
           volumeMounts:
             - name: sql
               mountPath: /seed
